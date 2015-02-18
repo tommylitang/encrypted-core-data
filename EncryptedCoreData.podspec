@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
         'MITRE' => 'imas-proj-list@lists.mitre.org'
     }
   
-    s.source        = { :git => 'https://github.com/project-imas/encrypted-core-data.git', :tag => '3.0' }
+    s.source        = { :git => 'https://github.com/tommylitang/encrypted-core-data.git', :tag => '3.0' }
   
     s.frameworks    = ['CoreData', 'Security']
     s.requires_arc  = true
