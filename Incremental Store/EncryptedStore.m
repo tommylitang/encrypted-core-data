@@ -1816,8 +1816,16 @@ static void dbsqliteRegExp(sqlite3_context *context, int argc, const char **argv
     
     if ([predicate isKindOfClass:[NSCompoundPredicate class]]) {
         NSCompoundPredicate * compoundPred = (NSCompoundPredicate*) predicate;
+        
+        //2015-02-26: Changed by Tommy to cater the case of duplicate entity class
+        NSMutableSet *processedStatement = [NSMutableSet new];
+        
         for (id subpred in [compoundPred subpredicates]){
-            [joinStatementsArray addObject:[self getJoinClause:fetchRequest withPredicate:subpred initial:NO]];
+            NSString *joinStatement = [self getJoinClause:fetchRequest withPredicate:subpred initial:NO];
+            if (![processedStatement containsObject:joinStatement]) {
+                [joinStatementsArray addObject:joinStatement];
+                [processedStatement addObject:joinStatement];
+            }
         }
     }
     else if ([predicate isKindOfClass:[NSComparisonPredicate class]]){
