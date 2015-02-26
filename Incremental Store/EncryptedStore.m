@@ -2448,9 +2448,9 @@ static void dbsqliteRegExp(sqlite3_context *context, int argc, const char **argv
             int len = (int)[obj length];
             
             if (str[0] == '\'' && str[len-1] == '\'')
-                sqlite3_bind_text(statement, ((int)idx + 1), [obj UTF8String]+1, (int)[(NSString*)obj length]-2, SQLITE_TRANSIENT);
+                sqlite3_bind_text(statement, ((int)idx + 1), [obj UTF8String]+1, (int)[(NSString*)obj lengthOfBytesUsingEncoding:NSUTF8StringEncoding]-2, SQLITE_TRANSIENT);
             else
-                sqlite3_bind_text(statement, ((int)idx + 1), [obj UTF8String], (int)[(NSString*)obj length], SQLITE_TRANSIENT);
+                sqlite3_bind_text(statement, ((int)idx + 1), [obj UTF8String], (int)[(NSString*)obj lengthOfBytesUsingEncoding:NSUTF8StringEncoding], SQLITE_TRANSIENT);
         }
         
         // number
