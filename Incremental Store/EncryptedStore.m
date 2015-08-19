@@ -2624,17 +2624,37 @@ static void dbsqliteRegExp(sqlite3_context *context, int argc, const char **argv
                                                                         name:[pathComponents objectAtIndex:0]];
                 NSString * destinationName = [self tableNameForEntity:rel.destinationEntity];
                 NSString * entityTableName = [self tableNameForEntity:entity];
-                value = [NSString stringWithFormat:@"(SELECT COUNT(*) FROM %@ [%@] WHERE [%@].%@ = %@.__objectid",
-                         destinationName,
-                         rel.name,
-                         rel.name,
-                         [self foreignKeyColumnForRelationship:rel.inverseRelationship],
-                         entityTableName];
-                if (rel.destinationEntity.superentity != nil) {
-                    value = [value stringByAppendingString:
-                             [NSString stringWithFormat:@" AND [%@].__entityType = %ld",
-                              rel.name,
-                              rel.destinationEntity.typeHash]];
+                
+
+                
+                if ([rel isToMany] && [[rel inverseRelationship] isToMany]) {
+                    NSString *relationTable = [self tableNameForRelationship:rel];
+                    NSString *sourceIDColumn = [NSString stringWithFormat:@"%@_%@__objectid", [[self rootForEntity:entity] name], rel.name];
+                    NSString *destinationIDColumn = [NSString stringWithFormat:@"%@_%@__objectid", destinationName, [rel inverseRelationship].name];
+                    
+                    value = [NSString stringWithFormat:@"(SELECT COUNT(*) FROM %@,%@ WHERE %@.%@ = %@.__objectid",
+                                     relationTable,
+                                    entityTableName,
+                                    relationTable,
+                                     sourceIDColumn,
+                                     entityTableName];
+                    
+                }else{
+                
+                
+                
+                    value = [NSString stringWithFormat:@"(SELECT COUNT(*) FROM %@ [%@] WHERE [%@].%@ = %@.__objectid",
+                             destinationName,
+                             rel.name,
+                             rel.name,
+                             [self foreignKeyColumnForRelationship:rel.inverseRelationship],
+                             entityTableName];
+                    if (rel.destinationEntity.superentity != nil) {
+                        value = [value stringByAppendingString:
+                                 [NSString stringWithFormat:@" AND [%@].__entityType = %ld",
+                                  rel.name,
+                                  rel.destinationEntity.typeHash]];
+                    }
                 }
                 value = [value stringByAppendingString:@")"];
                 foundPredicate = YES;
